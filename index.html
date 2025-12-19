@@ -692,6 +692,14 @@
               </svg>
               CSV
             </button>
+            <button class="btn btn-primary" id="copyWhatsApp">
+              <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                </path>
+              </svg>
+              Copy Text
+            </button>
           </div>
         </div>
 
@@ -899,6 +907,7 @@
     const exportScreenshot = document.getElementById('exportScreenshot');
     const exportPDF = document.getElementById('exportPDF');
     const exportCSV = document.getElementById('exportCSV');
+    const copyWhatsApp = document.getElementById('copyWhatsApp');
     const historyList = document.getElementById('historyList');
     const clearHistoryBtn = document.getElementById('clearHistory');
 
@@ -1177,10 +1186,27 @@
           backgroundColor: getComputedStyle(document.body).backgroundColor,
           scale: 2
         });
-        const link = document.createElement('a');
-        link.download = `tax-calculator-${new Date().toISOString().split('T')[0]}.png`;
-        link.href = canvas.toDataURL();
-        link.click();
+        canvas.toBlob(async (blob) => {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                'image/png': blob
+              })
+            ]);
+            // Visual feedback
+            const originalText = exportScreenshot.innerHTML;
+            exportScreenshot.innerHTML = '<svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!';
+            setTimeout(() => {
+              exportScreenshot.innerHTML = originalText;
+            }, 2000);
+          } catch (err) {
+            // Fallback: download if clipboard API fails
+            const link = document.createElement('a');
+            link.download = `tax-calculator-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+          }
+        });
       } catch (error) {
         alert('Failed to generate screenshot. Please try again.');
       }
@@ -1250,6 +1276,49 @@
       link.href = URL.createObjectURL(blob);
       link.download = `tax-calculator-${new Date().toISOString().split('T')[0]}.csv`;
       link.click();
+    });
+
+    copyWhatsApp.addEventListener('click', () => {
+      const rows = Array.from(itemsBody.querySelectorAll('tr'));
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+
+      let text = '📊 *Tax Calculation*\n\n';
+
+      // Items
+      if (rows.length > 0) {
+        text += '*Items:*\n';
+        rows.forEach(row => {
+          const name = row.querySelector('.item-name').value || 'Unnamed item';
+          const price = row.querySelector('.item-price').value || '0';
+          const qty = row.querySelector('.item-qty').value || '0';
+          const lineTotal = row.querySelector('.line-total').textContent;
+          text += `• ${name}: ${lineTotal} (${qty} × ${price})\n`;
+        });
+        text += '\n';
+      }
+
+      // Summary
+      text += '*Summary:*\n';
+      text += `Base Total: ${document.getElementById('baseTotal').textContent}\n`;
+      text += `GETFund (2.5%): ${document.getElementById('getfund').textContent}\n`;
+      text += `NHIL (2.5%): ${document.getElementById('nhil').textContent}\n`;
+      text += `Covid-19 (1%): ${document.getElementById('covid').textContent}\n`;
+      text += `Total Levies: ${document.getElementById('levyTotal').textContent}\n`;
+      text += `Subtotal: ${document.getElementById('subTotal').textContent}\n`;
+      text += `VAT (15%): ${document.getElementById('vat').textContent}\n`;
+      text += `Total Taxes: ${document.getElementById('allTaxes').textContent}\n`;
+      text += `\n*Final Amount: ${document.getElementById('finalTotal').textContent}*\n`;
+      text += `\nMode: ${mode === 'exclusive' ? 'Tax-exclusive' : 'Tax-inclusive'}`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = copyWhatsApp.innerHTML;
+        copyWhatsApp.innerHTML = '<svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!';
+        setTimeout(() => {
+          copyWhatsApp.innerHTML = originalText;
+        }, 2000);
+      }).catch(() => {
+        alert('Failed to copy to clipboard. Please try again.');
+      });
     });
 
     document.querySelectorAll('input[name="mode"]').forEach(radio => {

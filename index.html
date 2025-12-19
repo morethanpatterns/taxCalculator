@@ -585,8 +585,7 @@
   <div class="shell">
     <div class="header-bar">
       <header>
-        <div class="badge">Ghana Tax Flow</div>
-        <h1>Dual-mode calculator with tax transparency</h1>
+        <h1>Tax Calculator</h1>
       </header>
       <div class="controls">
         <div class="control-group">
@@ -644,14 +643,14 @@
             <input type="radio" name="mode" value="exclusive" checked>
             <div>
               <div><strong>Tax-exclusive prices</strong></div>
-              <div class="note">Enter prices without levies; we add everything for you.</div>
+              <div class="note">Enter prices without levies; I add everything for you.</div>
             </div>
           </label>
           <label class="pill">
             <input type="radio" name="mode" value="inclusive">
             <div>
               <div><strong>Tax-inclusive prices</strong></div>
-              <div class="note">Feed us final prices; we reverse engineer the tax stack.</div>
+              <div class="note">Feed me final prices; I reverse engineer the tax stack.</div>
             </div>
           </label>
         </div>
@@ -687,7 +686,49 @@
           </div>
           <div class="stat">
             <div class="stat-header">
-              <h3>Levies (6%)</h3>
+              <h3>GETFund (2.5%)</h3>
+              <button class="copy-btn" data-copy="getfund" title="Copy">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+            <div class="value" id="getfund">GHS 0.00</div>
+            <div class="note">Education Trust Fund levy</div>
+          </div>
+          <div class="stat">
+            <div class="stat-header">
+              <h3>NHIL (2.5%)</h3>
+              <button class="copy-btn" data-copy="nhil" title="Copy">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+            <div class="value" id="nhil">GHS 0.00</div>
+            <div class="note">National Health Insurance Levy</div>
+          </div>
+          <div class="stat">
+            <div class="stat-header">
+              <h3>Covid-19 (1%)</h3>
+              <button class="copy-btn" data-copy="covid" title="Copy">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+            <div class="value" id="covid">GHS 0.00</div>
+            <div class="note">Covid-19 Health Recovery Levy</div>
+          </div>
+          <div class="stat">
+            <div class="stat-header">
+              <h3>Total Levies</h3>
               <button class="copy-btn" data-copy="levyTotal" title="Copy">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -697,7 +738,7 @@
               </button>
             </div>
             <div class="value" id="levyTotal">GHS 0.00</div>
-            <div class="note">2.5% GETFund · 2.5% NHIL · 1% Covid-19</div>
+            <div class="note">Sum of GETFund + NHIL + Covid-19</div>
           </div>
           <div class="stat">
             <div class="stat-header">
@@ -737,7 +778,7 @@
               </button>
             </div>
             <div class="value" id="allTaxes">GHS 0.00</div>
-            <div class="note">Sum of VAT + GETFund + NHIL + Covid-19.</div>
+            <div class="note">Sum of VAT + all levies.</div>
           </div>
           <div class="stat">
             <div class="stat-header">
@@ -758,7 +799,7 @@
 
       <aside class="card quick-card">
         <div class="tag">Quick reverse</div>
-        <div class="note">Have only the grand total with taxes? Drop it here and we'll unstack the math instantly.</div>
+        <div class="note">Have only the grand total with taxes? Drop it here and I'll unstack the math instantly.</div>
         <label>
           <div class="note">Final total (tax-inclusive)</div>
           <input type="number" id="quickFinal" placeholder="e.g. 1000" min="0" step="0.01">
@@ -879,6 +920,9 @@
       const finalTotal = parseFloat(document.getElementById('finalTotal').textContent.replace('GHS ', '')) || 0;
       const vat = parseFloat(document.getElementById('vat').textContent.replace('GHS ', '')) || 0;
       const allTaxes = parseFloat(document.getElementById('allTaxes').textContent.replace('GHS ', '')) || 0;
+      const getfund = parseFloat(document.getElementById('getfund').textContent.replace('GHS ', '')) || 0;
+      const nhil = parseFloat(document.getElementById('nhil').textContent.replace('GHS ', '')) || 0;
+      const covid = parseFloat(document.getElementById('covid').textContent.replace('GHS ', '')) || 0;
       const mode = document.querySelector('input[name="mode"]:checked').value;
 
       if (finalTotal === 0) return;
@@ -987,7 +1031,10 @@
       const getfund = baseTotal * rates.getfund;
       const nhil = baseTotal * rates.nhil;
       const covid = baseTotal * rates.covid;
-      const levyDisplay = round(getfund) + round(nhil) + round(covid);
+      const getfundDisplay = round(getfund);
+      const nhilDisplay = round(nhil);
+      const covidDisplay = round(covid);
+      const levyDisplay = round(getfundDisplay + nhilDisplay + covidDisplay);
       const baseDisplay = round(baseTotal);
       const subDisplay = round(baseDisplay + levyDisplay);
       const vatDisplay = round(subDisplay * rates.vat);
@@ -995,6 +1042,9 @@
       const allTaxesDisplay = round(levyDisplay + vatDisplay);
 
       document.getElementById('baseTotal').textContent = currency(baseDisplay);
+      document.getElementById('getfund').textContent = currency(getfundDisplay);
+      document.getElementById('nhil').textContent = currency(nhilDisplay);
+      document.getElementById('covid').textContent = currency(covidDisplay);
       document.getElementById('levyTotal').textContent = currency(levyDisplay);
       document.getElementById('subTotal').textContent = currency(subDisplay);
       document.getElementById('vat').textContent = currency(vatDisplay);
@@ -1124,7 +1174,10 @@
       csv += '\n';
       csv += `Mode,${mode}\n`;
       csv += `Base Total,${document.getElementById('baseTotal').textContent.replace('GHS ', '')}\n`;
-      csv += `Levies,${document.getElementById('levyTotal').textContent.replace('GHS ', '')}\n`;
+      csv += `GETFund,${document.getElementById('getfund').textContent.replace('GHS ', '')}\n`;
+      csv += `NHIL,${document.getElementById('nhil').textContent.replace('GHS ', '')}\n`;
+      csv += `Covid-19,${document.getElementById('covid').textContent.replace('GHS ', '')}\n`;
+      csv += `Total Levies,${document.getElementById('levyTotal').textContent.replace('GHS ', '')}\n`;
       csv += `Subtotal,${document.getElementById('subTotal').textContent.replace('GHS ', '')}\n`;
       csv += `VAT,${document.getElementById('vat').textContent.replace('GHS ', '')}\n`;
       csv += `Total Taxes,${document.getElementById('allTaxes').textContent.replace('GHS ', '')}\n`;

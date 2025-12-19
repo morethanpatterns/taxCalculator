@@ -25,17 +25,17 @@
     }
 
     [data-theme="dark"] {
-      --bg: #020617;
-      --panel: #0f172a;
-      --panel-strong: #1e293b;
+      --bg: #000000;
+      --panel: #1a1a1a;
+      --panel-strong: #262626;
       --accent: #ffffff;
-      --accent-2: #3b82f6;
+      --accent-2: #60a5fa;
       --text: #ffffff;
-      --muted: #cbd5e1;
-      --grid: #475569;
-      --hover: #1e293b;
-      --shadow: rgba(0, 0, 0, 0.5);
-      --shadow-lg: rgba(0, 0, 0, 0.7);
+      --muted: #e5e7eb;
+      --grid: #525252;
+      --hover: #2a2a2a;
+      --shadow: rgba(0, 0, 0, 0.8);
+      --shadow-lg: rgba(0, 0, 0, 0.9);
     }
 
     * {
@@ -272,6 +272,15 @@
       background: rgba(59, 130, 246, 0.1);
     }
 
+    [data-theme="dark"] .pill {
+      background: var(--panel-strong);
+    }
+
+    [data-theme="dark"] .pill.active {
+      background: rgba(96, 165, 250, 0.2);
+      border-color: var(--accent-2);
+    }
+
     .pill strong {
       display: block;
       font-size: 14px;
@@ -308,6 +317,10 @@
       background: var(--hover);
     }
 
+    [data-theme="dark"] tr:hover {
+      background: var(--panel-strong);
+    }
+
     input[type="text"],
     input[type="number"] {
       width: 100%;
@@ -321,12 +334,25 @@
       font-family: inherit;
     }
 
+    [data-theme="dark"] input[type="text"],
+    [data-theme="dark"] input[type="number"] {
+      background: var(--panel-strong);
+      border-color: var(--grid);
+    }
+
     input[type="text"]:focus,
     input[type="number"]:focus {
       outline: none;
       border-color: var(--accent-2);
       background: var(--panel);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    [data-theme="dark"] input[type="text"]:focus,
+    [data-theme="dark"] input[type="number"]:focus {
+      background: var(--panel-strong);
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.4);
     }
 
     input[type="number"]::-webkit-inner-spin-button,
@@ -391,10 +417,21 @@
       transition: all 0.2s;
     }
 
+    [data-theme="dark"] .stat {
+      background: var(--panel-strong);
+      border-color: var(--grid);
+    }
+
     .stat:hover {
       border-color: var(--accent-2);
       box-shadow: 0 4px 12px var(--shadow);
       background: var(--panel);
+    }
+
+    [data-theme="dark"] .stat:hover {
+      background: var(--panel-strong);
+      border-color: var(--accent-2);
+      box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
     }
 
     .stat-header {
@@ -435,6 +472,11 @@
       background: var(--panel);
     }
 
+    [data-theme="dark"] .copy-btn:hover {
+      color: var(--accent-2);
+      background: var(--panel-strong);
+    }
+
     .copy-btn svg {
       width: 14px;
       height: 14px;
@@ -449,7 +491,16 @@
     }
 
     [data-theme="dark"] .stat .value {
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .stat h3 {
+      color: #e5e7eb;
+    }
+
+    [data-theme="dark"] .note {
+      color: #d1d5db;
     }
 
     .note {
@@ -870,7 +921,12 @@
 
     const currency = (val, decimals = null) => {
       const dp = decimals !== null ? decimals : decimalPlaces;
-      return `GHS ${Number(val || 0).toFixed(dp)}`;
+      const num = Number(val || 0);
+      const formatted = num.toLocaleString('en-US', {
+        minimumFractionDigits: dp,
+        maximumFractionDigits: dp
+      });
+      return `GHS ${formatted}`;
     };
 
     const rates = {

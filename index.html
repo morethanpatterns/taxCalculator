@@ -716,9 +716,37 @@ input[type="number"]::-webkit-outer-spin-button {
     align-items: flex-start;
   }
 
+  .page-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .tax-levies-controls {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .tax-levies-mode,
+  .tax-levies-precision {
+    width: 100%;
+  }
+
+  .tax-levies-precision select {
+    width: 100%;
+  }
+
+  .analytics-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -731,6 +759,50 @@ input[type="number"]::-webkit-outer-spin-button {
 @media (max-width: 720px) {
   .content {
     padding: 18px 16px 36px;
+  }
+
+  .settings-card {
+    padding: 1.1rem;
+  }
+
+  .coa-table th,
+  .coa-table td {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .journal-modal {
+    padding: 16px;
+  }
+
+  .journal-modal-content {
+    width: min(920px, calc(100vw - 32px));
+    max-height: 80vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-actions .btn,
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tax-levies-mode {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tax-levies-mode .analytics-chip {
+    width: 100%;
+  }
+
+  .analytics-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tax-levies-rates-grid {
+    grid-template-columns: 1fr;
   }
 }
 
